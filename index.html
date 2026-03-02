@@ -4,64 +4,100 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Quality Store</title>
+
 <style>
-body {
+body{
   margin:0;
-  font-family:Arial;
+  font-family:Arial, sans-serif;
   background:#f4f6f9;
 }
-header {
-  background:#111;
+
+header{
+  background:black;
   color:white;
   padding:20px;
   text-align:center;
-  font-size:28px;
-  font-weight:bold;
+  font-size:26px;
 }
-.products {
+
+.products{
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
   gap:20px;
-  padding:30px;
-}
-.card {
-  background:white;
   padding:20px;
+}
+
+.card{
+  background:white;
   border-radius:12px;
-  box-shadow:0 5px 20px rgba(0,0,0,0.1);
-  text-align:center;
+  padding:20px;
+  box-shadow:0 10px 25px rgba(0,0,0,0.1);
+  transition:0.3s;
 }
-.card h3 {
-  margin-top:0;
+
+.card:hover{
+  transform:translateY(-5px);
 }
-button {
+
+button{
   background:black;
   color:white;
-  padding:10px 15px;
+  padding:10px;
   border:none;
   border-radius:6px;
   cursor:pointer;
-  font-size:16px;
+  width:100%;
 }
-button:hover {
+
+button:hover{
   background:#333;
 }
-.cart {
+
+.cart{
   position:fixed;
   top:20px;
   right:20px;
   background:white;
-  padding:15px 20px;
-  border-radius:10px;
-  box-shadow:0 5px 20px rgba(0,0,0,0.1);
-  font-weight:bold;
+  padding:10px 15px;
+  border-radius:8px;
+  box-shadow:0 5px 15px rgba(0,0,0,0.2);
 }
-footer {
-  text-align:center;
-  padding:20px;
-  background:#111;
+
+.admin{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:black;
   color:white;
-  margin-top:40px;
+  padding:10px 15px;
+  border-radius:8px;
+  cursor:pointer;
+}
+
+.telegram{
+  position:fixed;
+  bottom:20px;
+  left:20px;
+  background:#0088cc;
+  color:white;
+  padding:12px;
+  border-radius:50%;
+  font-size:20px;
+  text-decoration:none;
+}
+
+form{
+  background:white;
+  padding:20px;
+  margin:20px;
+  border-radius:10px;
+  box-shadow:0 5px 15px rgba(0,0,0,0.1);
+}
+
+input{
+  width:100%;
+  padding:10px;
+  margin-bottom:10px;
 }
 </style>
 </head>
@@ -73,38 +109,64 @@ footer {
 🛒 Кошик: <span id="cart-count">0</span>
 </div>
 
-<div class="products">
-  <div class="card">
-    <h3>Пароочисник</h3>
-    <p>2499 ₴</p>
-    <button onclick="addToCart()">Купити</button>
-  </div>
+<div class="products" id="products"></div>
 
-  <div class="card">
-    <h3>Блендер</h3>
-    <p>1299 ₴</p>
-    <button onclick="addToCart()">Купити</button>
-  </div>
+<h2 style="text-align:center;">Оформлення замовлення</h2>
 
-  <div class="card">
-    <h3>Електрочайник</h3>
-    <p>999 ₴</p>
-    <button onclick="addToCart()">Купити</button>
-  </div>
-</div>
+<form onsubmit="submitOrder(event)">
+<input type="text" id="name" placeholder="Ваше ім’я" required>
+<input type="tel" id="phone" placeholder="Ваш телефон" required>
+<button type="submit">Замовити</button>
+</form>
 
-<footer>
-© 2026 Quality Store. Всі права захищено.
-</footer>
+<div class="admin" onclick="addProduct()">+ Додати товар</div>
+
+<a href="https://t.me/yourusername" class="telegram">✈</a>
 
 <script>
-let count = 0;
+let products = JSON.parse(localStorage.getItem("products")) || [
+  {name:"Пароочисник", price:2499},
+  {name:"Блендер", price:1299},
+  {name:"Електрочайник", price:999}
+];
+
+let cartCount = 0;
+
+function renderProducts(){
+  const container = document.getElementById("products");
+  container.innerHTML = "";
+  products.forEach(p=>{
+    container.innerHTML += `
+      <div class="card">
+        <h3>${p.name}</h3>
+        <p>${p.price} ₴</p>
+        <button onclick="addToCart()">Купити</button>
+      </div>
+    `;
+  });
+}
 
 function addToCart(){
-  count++;
-  document.getElementById("cart-count").innerText = count;
-  alert("Товар додано в кошик!");
+  cartCount++;
+  document.getElementById("cart-count").innerText = cartCount;
 }
+
+function addProduct(){
+  const name = prompt("Назва товару:");
+  const price = prompt("Ціна:");
+  if(name && price){
+    products.push({name, price});
+    localStorage.setItem("products", JSON.stringify(products));
+    renderProducts();
+  }
+}
+
+function submitOrder(e){
+  e.preventDefault();
+  alert("Замовлення прийнято! Ми з вами зв'яжемось.");
+}
+
+renderProducts();
 </script>
 
 </body>
